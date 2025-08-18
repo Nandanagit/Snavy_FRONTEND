@@ -1,79 +1,67 @@
 "use client";
+import { useState } from "react";
+import { apiClient } from "../types/axios"; 
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+export default function Home() {
+  const [url, setUrl] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<any>(null);
+  const router = useRouter();
 
-import { Player } from "@remotion/player";
-import type { NextPage } from "next";
-import React, { useMemo, useState } from "react";
-import { Main } from "../remotion/MyComp/Main";
-import {
-  CompositionProps,
-  defaultMyCompProps,
-  DURATION_IN_FRAMES,
-  VIDEO_FPS,
-  VIDEO_HEIGHT,
-  VIDEO_WIDTH,
-} from "../types/constants";
-import { z } from "zod";
-import { RenderControls } from "../components/RenderControls";
-import { Tips } from "../components/Tips/Tips";
-import { Spacing } from "../components/Spacing";
+  const handleGenerate = async () => {
+    if (!url) {
+      setError("Please enter a URL");
+      return;
+    }
 
-const container: React.CSSProperties = {
-  maxWidth: 768,
-  margin: "auto",
-  marginBottom: 20,
-};
+    try {
+      setError("");
+      setLoading(true);
+      setData(null);
 
-const outer: React.CSSProperties = {
-  borderRadius: "var(--geist-border-radius)",
-  overflow: "hidden",
-  boxShadow: "0 0 200px rgba(0, 0, 0, 0.15)",
-  marginBottom: 40,
-  marginTop: 60,
-};
+      const response = await apiClient.post("/scrape-website", {
+        url,
+      });
 
-const player: React.CSSProperties = {
-  width: "100%",
-};
-
-const Home: NextPage = () => {
-  const [text, setText] = useState<string>(defaultMyCompProps.title);
-
-  const inputProps: z.infer<typeof CompositionProps> = useMemo(() => {
-    return {
-      title: text,
-    };
-  }, [text]);
+      setData(response.data);
+      console.log("Scraped data:", response.data);
+    } catch (err: any) {
+      console.error("Scrape error:", err);
+      setError("Failed to scrape website.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div>
-      <div style={container}>
-        <div className="cinematics" style={outer}>
-          <Player
-            component={Main}
-            inputProps={inputProps}
-            durationInFrames={DURATION_IN_FRAMES}
-            fps={VIDEO_FPS}
-            compositionHeight={VIDEO_HEIGHT}
-            compositionWidth={VIDEO_WIDTH}
-            style={player}
-            controls
-            autoPlay
-            loop
-          />
-        </div>
-        <RenderControls
-          text={text}
-          setText={setText}
-          inputProps={inputProps}
-        ></RenderControls>
-        <Spacing></Spacing>
-        <Spacing></Spacing>
-        <Spacing></Spacing>
-        <Spacing></Spacing>
-        <Tips></Tips>
-      </div>
-    </div>
-  );
-};
+    <main className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
+      <h1 className="text-5xl font-bold text-gray-800 mb-4">Video Generator</h1>
+      <p className="text-gray-600 mb-6">
+        Turn any website&apos;s images into a promotional video
+      </p>
 
-export default Home;
+      <div className="flex gap-2 mb-4 w-full max-w-md">
+        <input
+          type="text"
+          placeholder="https://example.com/"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          className="flex-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
+        >
+          {loading ? "Scraping..." : "Scrape Website"}
+        </button>
+      </div>
+
+      {error && toast.error(error)}
+      {data && toast.success(`Scraping completed successfully!`)}
+      {data && router.push("/page2")}
+    </main>
+  );
+}

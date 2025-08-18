@@ -1,27 +1,21 @@
+// app/layout.tsx
 import "../../styles/global.css";
-import { Metadata, Viewport } from "next";
+import { ReactNode } from "react";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
-export const metadata: Metadata = {
-  title: "Remotion and Next.js",
-  description: "Remotion and Next.js",
+export const metadata = {
+  title: "Video Generator",
+  description: "Turn any website's images into a promotional video",
 };
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-};
-
-export default function RootLayout({
-  // Layouts must accept a children prop.
-  // This will be populated with nested layouts or pages
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="antialiased bg-gray-50 text-gray-900">
+        {children}
+        <ToastContainer position="top-right" autoClose={5000} />
+      </body>
     </html>
   );
 }
