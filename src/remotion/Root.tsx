@@ -1,15 +1,18 @@
-import { MyComposition } from "./MyComp/Main";
-import { Composition } from "remotion";
+import { Composition } from 'remotion';
+import { MyVideo } from './MyComp/Main';
 
-export const RemotionRoot: React.FC = () => {
+export const RemotionRoot = () => {
   return (
     <Composition
-      id="MyComposition"
+      id="MyVideo"
+      component={MyVideo}
       durationInFrames={150}
       fps={30}
-      width={1920}
-      height={1080}
-      component={MyComposition}
+      width={1280}
+      height={720}
+      defaultProps={{
+        title: 'Hello World',
+      }}
     />
   );
 };

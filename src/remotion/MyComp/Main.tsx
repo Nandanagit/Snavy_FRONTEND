@@ -1,18 +1,16 @@
-import { AbsoluteFill, useCurrentFrame } from "remotion";
- 
-export const MyComposition = () => {
+// remotion/MyVideo.tsx
+import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
+import {Img} from 'remotion';
+export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
   const frame = useCurrentFrame();
- 
+
+  // Simple animation: fade in text
+  const opacity = interpolate(frame, [0, 30], [0, 1]);
+
   return (
-    <AbsoluteFill
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-        fontSize: 100,
-        backgroundColor: "white",
-      }}
-    >
-      The current frame is {frame}.
-    </AbsoluteFill>
+    <AbsoluteFill>
+          <Img src={`http://localhost:6001/images/image_1.png`}  width={1000} height={1400} style={{ objectFit: 'contain' }}/>
+          <h1 style={{ color: 'white', fontSize: 80, opacity }}>{title}</h1>
+        </AbsoluteFill>
   );
 };
