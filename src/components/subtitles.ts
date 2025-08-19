@@ -2,7 +2,7 @@
 
 import apiClient from "../types/axios";
 
-export default async function subtitles() {
+export default async function Subtitles() {
     const response = await apiClient.post("/subtitles");
     return response.data;
 }

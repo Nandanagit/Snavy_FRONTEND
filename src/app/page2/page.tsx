@@ -20,7 +20,7 @@ export default function HomePage() {
         <Player
           component={MyVideo}
           inputProps={{ title: "Generated via Button!" }}
-          durationInFrames={150}
+          durationInFrames={1170}
           compositionWidth={1280}
           compositionHeight={720}
           fps={30}
