@@ -3,6 +3,9 @@ import { useState } from "react";
 import { apiClient } from "../types/axios"; 
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import Audio from "../components/audio";
+import Subtitles from "../components/subtitles";
+
 export default function Home() {
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
@@ -61,7 +64,10 @@ export default function Home() {
 
       {error && toast.error(error)}
       {data && toast.success(`Scraping completed successfully!`)}
-      {data && router.push("/page2")}
+      {data && Audio()}
+      {data && setTimeout(() => Subtitles(), 1000)}
+      {data && setTimeout(() => router.push("/page2"), 500)}
+      
     </main>
   );
 }
