@@ -14,6 +14,12 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
   const [images, setImages] = useState<{url: string, start: number, end: number}[]>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
 
+  const [images, setImages] = useState<{url: string, start: number, end: number}[]>([]);
+  const [currentImage, setCurrentImage] = useState<string>('');
+
+  const [images, setImages] = useState<{url: string, start: number, end: number}[]>([]);
+  const [currentImage, setCurrentImage] = useState<string>('');
+
   useEffect(() => {
     const fetchSubtitles = async () => {
       try {
@@ -56,7 +62,6 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
     fetchImages();
   }, []);
 
-
   useEffect(() => {
     if (images.length === 0) return;
 
@@ -84,13 +89,24 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
             left: 0,
           }}
         />
-
       )}
 
       {/* Render current subtitle */}
       {currentSubtitle && (
         <div
           style={{
+            position: 'absolute',
+            bottom: 50,
+            width: '100%',
+            textAlign: 'center',
+            color: 'white',
+            fontSize: 30,
+            fontWeight: 'bold',
+            textShadow: '2px 2px 4px black',
+          }}
+        >
+          {currentSubtitle.text}
+        </div>
             position: 'absolute',
             bottom: 50,
             width: '100%',
