@@ -56,6 +56,7 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
     fetchImages();
   }, []);
 
+
   useEffect(() => {
     if (images.length === 0) return;
 
@@ -83,6 +84,7 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
             left: 0,
           }}
         />
+
       )}
 
       {/* Render current subtitle */}
