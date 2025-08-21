@@ -56,7 +56,7 @@ export default function Home() {
   }, [data, router]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-violet-50 to-violet-100 flex items-center justify-center px-4">
+    <main className="min-h-screen bg-gradient-to-br from-violet-650 via-violet-80 to-violet-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
