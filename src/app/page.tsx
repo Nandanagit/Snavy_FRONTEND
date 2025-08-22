@@ -10,6 +10,8 @@ export default function Home() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
+  const [username, setName] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
 
   const handleGenerate = async () => {
@@ -24,6 +26,8 @@ export default function Home() {
       setData(null);
 
       const response = await apiClient.post("/scrape-website", { url });
+      const store= await apiClient.post("mongo/store-user-details", { username,password, url });
+      console.log(store.data);
 
       setData(response.data);
 
@@ -55,6 +59,17 @@ export default function Home() {
     }
   }, [data, router]);
 
+
+  const handleUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const username = event.target.value;
+    setName(username);
+  };
+
+  const handlePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const password = event.target.value;
+    setPassword(password);
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-violet-650 via-violet-80 to-violet-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
@@ -76,6 +91,26 @@ export default function Home() {
         {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-xl p-6">
           <div className="mb-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-3">
+          Username
+          </label>
+          <input
+                type="text"
+                placeholder="username"
+                value={username}
+                onChange={(e) => handleUsername(e)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+          Password
+          </label>
+          <input
+                type="text"
+                placeholder="password"
+                value={password}
+                onChange={(e) => handlePassword(e)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
             <label className="block text-sm font-semibold text-gray-700 mb-3">
               Website URL
             </label>
