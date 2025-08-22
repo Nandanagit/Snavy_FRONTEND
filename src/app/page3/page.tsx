@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { apiClient } from "../types/axios";
+import apiClient from "../../types/axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { FiGlobe, FiArrowRight } from "react-icons/fi";
@@ -10,8 +10,8 @@ export default function Home() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
-  const [username, setName] = useState("");
-  const [password, setPassword] = useState("");
+  // const [username, setName] = useState("");  // commented out
+  // const [password, setPassword] = useState(""); // commented out
   const router = useRouter();
 
   const handleGenerate = async () => {
@@ -19,17 +19,22 @@ export default function Home() {
       setError("Please enter a URL");
       return;
     }
+
     try {
       setError("");
       setLoading(true);
       setData(null);
+
       const response = await apiClient.post("/scrape-website", { url });
-      const store = await apiClient.post("mongo/store-user-details", {
-        username,
-        password,
-        url,
-      });
-      console.log("Stored:", store.data);
+
+      // 🔒 Commented out storing user details
+      // const store = await apiClient.post("mongo/store-user-details", {
+      //   username,
+      //   password,
+      //   url,
+      // });
+      // console.log("Stored:", store.data);
+
       setData(response.data);
       console.log("Scraped data:", response.data);
     } catch (err: any) {
@@ -50,7 +55,7 @@ export default function Home() {
     if (data) {
       toast.success("Scraping completed successfully!");
       const timer = setTimeout(() => {
-        router.push("/page3");
+        router.push("/firecrawl");
       }, 1500);
       return () => clearTimeout(timer);
     }
@@ -77,7 +82,7 @@ export default function Home() {
         {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-xl p-6">
           <div className="mb-4">
-            {/* Username */}
+            {/* 🔒 Username field (commented out)
             <label className="block text-sm font-semibold text-gray-700 mb-3">
               Username
             </label>
@@ -89,7 +94,6 @@ export default function Home() {
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
 
-            {/* Password */}
             <label className="block text-sm font-semibold text-gray-700 mb-3 mt-4">
               Password
             </label>
@@ -100,9 +104,9 @@ export default function Home() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
+            */}
 
-            {/*
-            Website URL - Commented Out
+            {/* Website URL */}
             <label className="block text-sm font-semibold text-gray-700 mb-3 mt-4">
               Website URL
             </label>
@@ -118,16 +122,23 @@ export default function Home() {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               />
             </div>
-            */}
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           </div>
 
           {/* Submit */}
           <button
-            onClick={() => router.push("/page3")}
+            onClick={handleGenerate}
+            disabled={loading}
             className="w-full bg-gradient-to-r from-violet-800 to-violet-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-violet-900 hover:to-violet-700 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
           >
-            Login <FiArrowRight className="text-lg" />
+            {loading ? (
+              "Scraping..."
+            ) : (
+              <>
+                Get Started
+                <FiArrowRight className="text-lg" />
+              </>
+            )}
           </button>
         </div>
       </div>
