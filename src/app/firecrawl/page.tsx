@@ -5,7 +5,7 @@ import { FaSearch, FaLink, FaVideo } from "react-icons/fa";
 
 export default function FirecrawlPage() {
   const [domain, setDomain] = useState("");
-  const [urls, setUrls] = useState<(string | { url: string })[]>([]);
+  const [urls, setUrls] = useState<string[]>([]);
   const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [scenes, setScenes] = useState<{ title: string; content: string }[]>([]);
@@ -27,7 +27,23 @@ export default function FirecrawlPage() {
 
         const data = await res.json();
         console.log("Mapped URLs:", data);
-        setUrls(data);
+        const list = Array.isArray((data as any)?.links)
+        ? (data as any).links
+        : Array.isArray(data)
+        ? (data as any)
+        : [];
+      
+      const normalized: string[] = list
+        .map((x: any) =>
+          typeof x === "string"
+            ? x
+            : typeof x?.url === "string"
+            ? (x.url as string)
+            : undefined
+        )
+        .filter((u: any): u is string => typeof u === "string" && u.length > 0);
+      
+      setUrls(normalized);
     } catch (err) {
         console.error("Error fetching pages", err);
     }
@@ -91,33 +107,28 @@ export default function FirecrawlPage() {
               <FaSearch /> Get all pages
             </button>
           </div>
-
-          {/* URLs Found */}
+          
+{/* urls found */}
           <div>
-            <label className="block font-semibold text-violet-100 mb-2">
+            <label className="block font-semibold text-violet-900 mb-2">
               URLs Found
             </label>
-            <div className="bg-violet-300/60 text-white p-3 rounded-lg h-32 overflow-y-auto">
-              {urls.length > 0 ? (
-                urls.map((item, i) => {
-                    const url = typeof item === "string" ? item : item.url; // ✅ handle both cases
-                    return (
-                      <div
-                        key={i}
-                        className="cursor-pointer hover:underline"
-                        onClick={() =>
-                          setSelectedUrls((prev) =>
-                            prev.includes(url) ? prev : [...prev, url]
-                          )
-                        }
-                      >
-                        <FaLink className="inline mr-2" /> {url}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <p>No URLs fetched yet</p>
-                )}
+            <div className="bg-violet-900/80 text-white p-3 rounded-lg h-32 overflow-y-auto">
+            {urls.length > 0 ? (
+              urls.map((url, i) => (
+                <div
+                  key={i}
+                  className="cursor-pointer hover:underline"
+                  onClick={() =>
+                    setSelectedUrls((prev) => (prev.includes(url) ? prev : [...prev, url]))
+                  }
+                >
+                  <FaLink className="inline mr-2" /> {url}
+                </div>
+              ))
+            ) : (
+              <p>No URLS found</p>
+            )}
               </div>
             </div>
         </div>
