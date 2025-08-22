@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaSearch, FaLink, FaVideo } from "react-icons/fa";
+import { FaSearch, FaLink, FaVideo, FaSpinner } from "react-icons/fa";
+
 
 export default function FirecrawlPage() {
   const [domain, setDomain] = useState("");
@@ -28,21 +29,21 @@ export default function FirecrawlPage() {
 
         const data = await res.json();
         console.log("Mapped URLs:", data);
-        const list = Array.isArray((data as any)?.links)
-        ? (data as any).links
+        const list = Array.isArray((data )?.links)
+        ? (data ).links
         : Array.isArray(data)
-        ? (data as any)
+        ? (data )
         : [];
       
       const normalized: string[] = list
-        .map((x: any) =>
+        .map((x) =>
           typeof x === "string"
             ? x
             : typeof x?.url === "string"
-            ? (x.url as string)
+            ? (x.url) 
             : undefined
         )
-        .filter((u: any): u is string => typeof u === "string" && u.length > 0);
+        .filter((u) => typeof u === "string" && u.length > 0);
       
       setUrls(normalized);
     } catch (err) {
@@ -56,7 +57,7 @@ export default function FirecrawlPage() {
         setScenes([]);
     
         try {
-          const res = await fetch("http://localhost:3000/firecrawl/generated-scenes", {
+          await fetch("http://localhost:3000/firecrawl/generated-scenes", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ urls: selectedUrls }),
@@ -102,7 +103,7 @@ export default function FirecrawlPage() {
             />
             <button
               onClick={handleGetPages}
-              className="mt-3 px-4 py-2 bg-violet-300/70 text-white rounded-lg shadow hover:bg-violet-700 flex items-center gap-2"
+              className="mt-3 px-4 py-2 bg-violet-300/70 text-white rounded-lg shadow hover:bg-violet-300/60 flex items-center gap-2"
             >
               <FaSearch /> Get all pages
             </button>
@@ -180,32 +181,51 @@ export default function FirecrawlPage() {
         </div>
       )}
 
-      {/* Scene Section */}
-      <div className="bg-gradient-to-br from-[#A05DD8] to-[#3B176C] p-10 rounded-2xl shadow-md w-full max-w-7xl">
-        <label className="block font-semibold text-violet-100 mb-4">
-          Scene
-        </label>
-        <div className="grid grid-cols-3 gap-4">
-          {scenes.map((scene,i) => (
+{/* Scene Section */}
+<div className="bg-gradient-to-br from-[#A05DD8] to-[#3B176C] p-10 rounded-2xl shadow-md w-full max-w-7xl">
+  <label className="block font-semibold text-violet-100 mb-4">
+    Scene
+  </label>
+  <div className="grid grid-cols-3 gap-4">
+    {loading ? (
+      <div className="col-span-3 flex flex-col items-center mb-6">
+        <div className="flex items-center gap-3 mb-4">
+          <FaSpinner className="animate-spin h-8 w-8 text-violet-200" />
+
+          <span className="text-lg font-semibold text-violet-100">Generating scenes...</span>
+        </div>
+        <div className="flex gap-6 w-full">
+          {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="bg-violet-300/70 text-white p-6 rounded-xl shadow-md text-center"
-            >
-              <h3 className="font-semibold text-violet-100">{scene.title}</h3>
-              <p className="text-violet-100">{scene.content}</p>
-            </div>
+              className="flex-1 h-44 bg-violet-100/80 border-2 border-violet-300 shadow-lg animate-pulse rounded-xl"
+            />
           ))}
         </div>
-
-        <div className="flex justify-end mt-6">
-          <button
-            onClick={() => router.push('/generated-video')}
-            className="px-6 py-3 bg-violet-300/70 text-white rounded-xl shadow hover:bg-violet-700 flex items-center gap-2"
-          >
-            <FaVideo /> Generate Video
-          </button>
-        </div>
       </div>
-    </div>
+    ) : (
+      scenes.map((scene, i) => (
+        <div
+          key={i}
+          className="bg-violet-300/70 text-white p-6 rounded-xl shadow-md text-center"
+        >
+          <h3 className="font-semibold text-violet-100">{scene.title}</h3>
+          <p className="text-violet-100">{scene.content}</p>
+        </div>
+      ))
+    )}
+  </div>
+
+  <div className="flex justify-end mt-6">
+    <button
+      onClick={() => router.push('/generated-video')}
+      className="px-6 py-3 bg-violet-300/70 text-white rounded-xl shadow hover:bg-violet-300/60 flex items-center gap-2"
+      disabled={loading}
+    >
+      <FaVideo /> Generate Video
+    </button>
+  </div>
+</div>
+  </div>
   );
 }

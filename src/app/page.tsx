@@ -1,44 +1,41 @@
 "use client";
-import { useState, useEffect } from "react";
-import { apiClient } from "../types/axios";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { FiGlobe, FiArrowRight } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { FiArrowRight, FiGlobe } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 export default function Home() {
-  const [url, setUrl] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
   const [username, setName] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleGenerate = async () => {
-    if (!url) {
-      setError("Please enter a URL");
-      return;
-    }
-    try {
-      setError("");
-      setLoading(true);
-      setData(null);
-      const response = await apiClient.post("/scrape-website", { url });
-      const store = await apiClient.post("mongo/store-user-details", {
-        username,
-        password,
-        url,
-      });
-      console.log("Stored:", store.data);
-      setData(response.data);
-      console.log("Scraped data:", response.data);
-    } catch (err: any) {
-      console.error("Scrape error:", err);
-      setError("Failed to scrape website.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleGenerate = async () => {
+  //   if (!url) {
+  //     setError("Please enter a URL");
+  //     return;
+  //   }
+  //   try {
+  //     setError("");
+  //     setLoading(true);
+  //     setData(null);
+  //     const response = await apiClient.post("/scrape-website", { url });
+  //     const store = await apiClient.post("mongo/store-user-details", {
+  //       username,
+  //       password,
+  //       url,
+  //     });
+  //     console.log("Stored:", store.data);
+  //     setData(response.data);
+  //     console.log("Scraped data:", response.data);
+  //   } catch (err: any) {
+  //     console.error("Scrape error:", err);
+  //     setError("Failed to scrape website.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (error) {

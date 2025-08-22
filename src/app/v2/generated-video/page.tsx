@@ -3,14 +3,14 @@
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import { Player } from "@remotion/player";
-import { MyVideo } from "../../remotion/MyComp/Main";
+import { MyVideo } from "../../../remotion/MyComp/Main";
 import {
   defaultMyCompProps,
   DURATION_IN_FRAMES,
   VIDEO_FPS,
   VIDEO_HEIGHT,
   VIDEO_WIDTH,
-} from "../../types/constants";
+} from "../../../types/constants";
 
 interface Scene {
   id: number;

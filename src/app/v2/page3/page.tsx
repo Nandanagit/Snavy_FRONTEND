@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import apiClient from "../../types/axios";
+import apiClient from "../../../types/axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { FiGlobe, FiArrowRight } from "react-icons/fi";
