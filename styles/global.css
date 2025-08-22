@@ -1,4 +1,5 @@
 /* styles/global.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -14,6 +15,10 @@
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
+}
+
+body, html {
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Your custom styles remain the same */
