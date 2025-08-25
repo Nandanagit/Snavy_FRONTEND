@@ -69,7 +69,7 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: 'black', justifyContent: 'center', alignItems: 'center' }}>
-      <Audio src="http://localhost:4001/audio/audioo.mp3" />
+      <Audio src="http://localhost:4002/audio/audioo.mp3" />
       
       {currentImage && (
         <Img

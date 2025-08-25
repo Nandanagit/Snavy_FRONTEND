@@ -72,7 +72,6 @@ const Home: NextPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-950 via-violet-80 to-violet-90 p-6">
       <div className="w-full max-w-7xl">
-      <div className="w-full max-w-7xl">
         {/* Header */}
         <h1 className="text-center text-3xl font-bold text-white mb-9">
           Preview Your Video
@@ -93,14 +92,13 @@ const Home: NextPage = () => {
             loop
           />
         </div>
-
-        {/* Footer */}
-        <p className="text-center text-sm text-violet-900 mt-6">
-          Powered by <span className="font-semibold text-violet-200">Snavy</span> ⚡
-        </p>
       </div>
+
+      {/* Footer */}
+      <p className="text-center text-sm text-violet-900 mt-6">
+        Powered by <span className="font-semibold text-violet-200">Snavy</span> ⚡
+      </p>
     </div>
-  </div>
   );
 };
 
