@@ -5,8 +5,8 @@ import { FiArrowRight, FiGlobe } from "react-icons/fi";
 import { toast } from "react-toastify";
 
 export default function Home() {
-  const [error, setError] = useState("");
-  const [data, setData] = useState<any>(null);
+  const [error] = useState("");
+  const [data] = useState<{ message?: string } | null>(null);
   const [username, setName] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();

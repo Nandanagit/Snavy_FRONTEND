@@ -9,7 +9,7 @@ export default function Home() {
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<{ message?: string } | null>(null);
   // const [username, setName] = useState("");  // commented out
   // const [password, setPassword] = useState(""); // commented out
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function Home() {
 
       setData(response.data);
       console.log("Scraped data:", response.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Scrape error:", err);
       setError("Failed to scrape website.");
     } finally {
