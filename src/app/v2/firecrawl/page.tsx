@@ -256,7 +256,18 @@ export default function FirecrawlPage2() {
               className="bg-violet-300/70 text-white p-6 rounded-xl shadow-md text-center"
             >
               <h3 className="font-semibold text-violet-100">{scene.title}</h3>
-              <p className="text-violet-100">{scene.content}</p>
+              <p
+                className="text-violet-100"
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={e => {
+                  const updatedScenes = [...scenes];
+                  updatedScenes[i] = { ...scene, content: e.currentTarget.textContent || '' };
+                  setScenes(updatedScenes);
+                }}
+              >
+                {scene.content}
+              </p>
             </div>
           ))}
         </div>

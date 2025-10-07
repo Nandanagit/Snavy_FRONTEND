@@ -25,23 +25,50 @@ const GeneratedVideoPage = () => {
   const domainUrl = searchParams.get("domain") || "";
 
   // Parse scenes (sent as JSON string in query)
-  const scenesParam = searchParams.get("scenes");
-  let scenes: Scene[] = [];
+  const [scenes, setScenes] = React.useState<Scene[]>([]);
 
-  try {
-    scenes = scenesParam ? JSON.parse(scenesParam) : [];
-  } catch (err) {
-    console.error("Invalid scenes data", err);
-  }
+  React.useEffect(() => {
+    // TODO: Replace these with actual values from your app context or props
+    const selectedUrls = ["https://example.com/page1", "https://example.com/page2"];
+    const domain = searchParams.get("domain") || "example.com";
 
-  // ✅ Dummy fallback data if no scenes found
-  if (scenes.length === 0) {
-    scenes = [
-      { id: 1, title: "Scene 1", content: "Intro scene with branding and tagline." },
-      { id: 2, title: "Scene 2", content: "Showcase product features visually." },
-      { id: 3, title: "Scene 3", content: "Closing scene with call-to-action." },
-    ];
-  }
+    (async () => {
+      try {
+        const response = await fetch("http://localhost:6001/ai/generate-scenes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            urls: selectedUrls,
+            domain: domain,
+            numScenes: 8,
+            tone: "exciting",
+            platform: "reels",
+            maxLinesPerScene: 3,
+            includeCTA: true,
+            language: "english",
+            hooksOnly: false,
+            title: "Promotional Video",
+            keywords: ["product", "brand", "promotion"],
+            safeMode: true
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const generatedScenes = data.scenes ? data.scenes.map((scene: any, index: number) => ({
+            id: index + 1,
+            title: `Scene ${index + 1}`,
+            content: typeof scene === 'string' ? scene : scene.content || scene.name || 'Generated scene content'
+          })) : [];
+          setScenes(generatedScenes);
+        } else {
+          setScenes([]);
+        }
+      } catch (err) {
+        setScenes([]);
+      }
+    })();
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-[#020403] flex flex-col items-center">

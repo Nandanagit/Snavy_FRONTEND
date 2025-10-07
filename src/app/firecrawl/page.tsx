@@ -57,7 +57,7 @@ export default function FirecrawlPage() {
         setScenes([]);
     
         try {
-          await fetch("http://localhost:3000/firecrawl/generated-scenes", {
+          await fetch("http://localhost:3001/firecrawl/generated-scenes", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ urls: selectedUrls }),
