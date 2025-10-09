@@ -1,5 +1,4 @@
 "use client";
-
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import { Player } from "@remotion/player";
@@ -20,28 +19,44 @@ interface Scene {
 
 const GeneratedVideoPage = () => {
   const searchParams = useSearchParams();
+  const domainUrl = searchParams.get("url");
 
-  // Get domain from query
-  const domainUrl = searchParams.get("domain") || "";
 
-  // Parse scenes (sent as JSON string in query)
-  const scenesParam = searchParams.get("scenes");
-  let scenes: Scene[] = [];
+  // Fetch scenes from backend
+  const [scenes, setScenes] = React.useState<Scene[]>([]);
+  const [loadingScenes, setLoadingScenes] = React.useState(true);
+  const [scenesError, setScenesError] = React.useState<string|null>(null);
 
-  try {
-    scenes = scenesParam ? JSON.parse(scenesParam) : [];
-  } catch (err) {
-    console.error("Invalid scenes data", err);
-  }
+  React.useEffect(() => {
+    console.log("useEffect running");
+    console.log("domainUrl",domainUrl);
+    const fetchScenes = async () => {
+      setLoadingScenes(true);
+      setScenesError(null);
+      
+      try {
+        console.log("domainUrl",domainUrl)
+        const response = await fetch(`http://localhost:6001/mongo/scenes?domain=${encodeURIComponent(domainUrl)}`);
+        console.log("hii",response)
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const scenes = await response.json();
+        console.log("hiii",scenes)
+        if (Array.isArray(scenes)) {
+          setScenes(scenes);
+        } else {
+          setScenes([]);
+        }
+      } catch (e: any) {
+        setScenesError(e?.message || 'Failed to fetch scenes');
+        setScenes([]);
+      } finally {
+        setLoadingScenes(false);
+      }
+    };
+    if (domainUrl) fetchScenes();
+    else setLoadingScenes(false);
+  }, [domainUrl]);
 
-  // ✅ Dummy fallback data if no scenes found
-  if (scenes.length === 0) {
-    scenes = [
-      { id: 1, title: "Scene 1", content: "Intro scene with branding and tagline." },
-      { id: 2, title: "Scene 2", content: "Showcase product features visually." },
-      { id: 3, title: "Scene 3", content: "Closing scene with call-to-action." },
-    ];
-  }
 
   return (
     <div className="min-h-screen bg-[#020403] flex flex-col items-center">
