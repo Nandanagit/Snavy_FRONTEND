@@ -93,12 +93,12 @@ const Home: NextPage = () => {
             />
           </div>
         </div>
-
-        {/* Footer */}
-        <p className="text-center text-sm text-violet-900 mt-6">
-          Powered by <span className="font-semibold text-violet-200">Snavy</span> ⚡
-        </p>
       </div>
+
+      {/* Footer */}
+      <p className="text-center text-sm text-violet-900 mt-6">
+        Powered by <span className="font-semibold text-violet-200">Snavy</span> ⚡
+      </p>
     </div>
   );
 };
