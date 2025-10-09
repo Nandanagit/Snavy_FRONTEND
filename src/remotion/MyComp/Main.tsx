@@ -1,5 +1,5 @@
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { Img, Audio} from 'remotion';
+import { Img, Audio, Video } from 'remotion';
 import React, { useEffect, useState } from "react";
 import GetSubtitles from "../../components/get-subtitles";
 import GetImages from "../../components/get-images";
@@ -13,6 +13,8 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
   const [currentSubtitle, setCurrentSubtitle] = useState<Subtitle | null>(null);
   const [images, setImages] = useState<{url: string, start: number, end: number}[]>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
+  const [videoFiles, setVideoFiles] = useState<string[]>([]);
+  const [currentVideo, setCurrentVideo] = useState<string>('');
 
   useEffect(() => {
     const fetchSubtitles = async () => {
@@ -27,13 +29,34 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
   }, []);
 
   useEffect(() => {
-    if (subtitles.length === 0) return;
+    const fetchVideoFiles = async () => {
+      try {
+        const response = await fetch("http://localhost:6001/video-files");
+        if (response.ok) {
+          const videos = await response.json();
+          setVideoFiles(videos);
+        }
+      } catch (err) {
+        console.error("Failed to fetch video files:", err);
+      }
+    };
+    fetchVideoFiles();
+  }, []);
 
+  useEffect(() => {
+    if (videoFiles.length === 0) return;
+    const currentTimeMs = (frame / fps) * 1000;
+    const videoDuration = 5000; // 5 seconds per video
+    const videoIndex = Math.floor(currentTimeMs / videoDuration) % videoFiles.length;
+    setCurrentVideo(videoFiles[videoIndex] || '');
+  }, [frame, videoFiles]);
+
+  useEffect(() => {
+    if (subtitles.length === 0) return;
     const currentTimeMs = (frame / fps) * 1000;
     const activeSub = subtitles.find(
       (sub) => currentTimeMs >= sub.start && currentTimeMs < sub.end
     );
-
     setCurrentSubtitle(activeSub || null);
   }, [frame, subtitles]);
 
@@ -69,9 +92,21 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: 'black', justifyContent: 'center', alignItems: 'center' }}>
-      <Audio src="http://localhost:4002/audio/audioo.mp3" />
+      <Audio src="http://localhost:6001/audio/audioo.wav" />
       
-      {currentImage && (
+      {currentVideo ? (
+        <Video
+          src={currentVideo}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
+        />
+      ) : currentImage && (
         <Img
           src={currentImage}
           style={{
@@ -96,7 +131,7 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
             color: 'white',
             fontSize: 30,
             fontWeight: 'bold',
-            textShadow: '2px 2px 4px black',
+            textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
           }}
         >
           {currentSubtitle.text}

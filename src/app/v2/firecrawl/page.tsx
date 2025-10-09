@@ -1,16 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaSearch, FaLink, FaVideo } from "react-icons/fa";
 
-export default function FirecrawlPage() {
+export default function FirecrawlPage2() {
   const [domain, setDomain] = useState("");
+  const [domainLoading, setDomainLoading] = useState(false);
   const [urls, setUrls] = useState<string[]>([]);
   const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [scenes, setScenes] = useState<{ title: string; content: string }[]>([]);
 
+
+  // Fetch domain from API
+  const fetchDomain = async () => {
+    try {
+      setDomainLoading(true);
+      const response = await fetch("http://localhost:6001/get-domain-of-temp-user");
+      if (response.ok) {
+        const data = await response.json();
+        setDomain(data.domain || "");
+      }
+    } catch (error) {
+      console.error("Failed to fetch domain:", error);
+    } finally {
+      setDomainLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDomain();
+  }, []);
 
  const handleGetPages = async () => {
     try {
@@ -28,21 +49,28 @@ export default function FirecrawlPage() {
 
         const data = await res.json();
         console.log("Mapped URLs:", data);
-        const list = Array.isArray((data as any)?.links)
-        ? (data as any).links
+        interface MappedData {
+          links?: unknown[];
+        }
+        const typedData = data as MappedData;
+        const list = Array.isArray(typedData?.links)
+        ? typedData.links
         : Array.isArray(data)
-        ? (data as any)
+        ? data
         : [];
       
+      interface LinkItem {
+        url?: string;
+      }
       const normalized: string[] = list
-        .map((x: any) =>
+        .map((x: unknown) =>
           typeof x === "string"
             ? x
-            : typeof x?.url === "string"
-            ? (x.url as string)
+            : typeof (x as LinkItem)?.url === "string"
+            ? (x as LinkItem).url as string
             : undefined
         )
-        .filter((u: any): u is string => typeof u === "string" && u.length > 0);
+        .filter((u: unknown): u is string => typeof u === "string" && u.length > 0);
       
       setUrls(normalized);
     } catch (err) {
@@ -56,26 +84,54 @@ export default function FirecrawlPage() {
         setScenes([]);
     
         try {
-          const res = await fetch("http://localhost:3000/firecrawl/generated-scenes", {
+          const response = await fetch("http://localhost:6001/ai/generate-scenes", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ urls: selectedUrls }),
+            body: JSON.stringify({
+              urls: selectedUrls,
+              domain: domain,
+              numScenes: 8,
+              tone: "exciting",
+              platform: "reels",
+              maxLinesPerScene: 3,
+              includeCTA: true,
+              language: "english",
+              hooksOnly: false,
+              title: "Promotional Video",
+              keywords: ["product", "brand", "promotion"],
+              safeMode: true
+            }),
           });
     
-          // For now, just mock scenes instead of real scraping
-          const dummyScenes = [
-            { title: "Scene 1", content: "This is a dummy scene generated from the URLs." },
-            { title: "Scene 2", content: "Another scene with placeholder content." },
-            { title: "Scene 3", content: "Final dummy scene for preview." },
-          ];
-    
-          // Pretend backend responded
-          setTimeout(() => {
-            setScenes(dummyScenes);
-            setLoading(false);
-          }, 2000);
+          if (response.ok) {
+            const data = await response.json();
+            // Transform the API response to match our scene format
+            const generatedScenes = data.scenes ? data.scenes.map((scene: any, index: number) => ({
+              title: `Scene ${index + 1}`,
+              content: typeof scene === 'string' ? scene : scene.content || scene.name || 'Generated scene content'
+            })) : [];
+            
+            setScenes(generatedScenes);
+          } else {
+            console.error("Failed to generate scenes:", response.statusText);
+            // Fallback to dummy scenes if API fails
+            const fallbackScenes = [
+              { title: "Scene 1", content: "Welcome to our brand story - discover what makes us unique." },
+              { title: "Scene 2", content: "Explore our premium products designed for your lifestyle." },
+              { title: "Scene 3", content: "Join thousands of satisfied customers - shop now!" },
+            ];
+            setScenes(fallbackScenes);
+          }
         } catch (error) {
-          console.error("Error generating scenes", error);
+          console.error("Error generating scenes:", error);
+          // Fallback to dummy scenes on error
+          const fallbackScenes = [
+            { title: "Scene 1", content: "Welcome to our brand story - discover what makes us unique." },
+            { title: "Scene 2", content: "Explore our premium products designed for your lifestyle." },
+            { title: "Scene 3", content: "Join thousands of satisfied customers - shop now!" },
+          ];
+          setScenes(fallbackScenes);
+        } finally {
           setLoading(false);
         }
       };
@@ -93,16 +149,24 @@ export default function FirecrawlPage() {
             <label className="block font-semibold text-violet-100 mb-2">
               Domain
             </label>
-            <input
-              type="text"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              placeholder="Enter website domain"
-              className="w-full p-3 rounded-lg border border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400 placeholder-white"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={domain}
+                onChange={(e) => setDomain(e.target.value)}
+                placeholder={domainLoading ? "Loading domain..." : "Enter website domain"}
+                className="w-full p-3 rounded-lg border border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400 placeholder-white"
+                disabled={domainLoading}
+              />
+              {domainLoading && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                </div>
+              )}
+            </div>
             <button
               onClick={handleGetPages}
-              className="mt-3 px-4 py-2 bg-violet-300/70 text-white rounded-lg shadow hover:bg-violet-700 flex items-center gap-2"
+              className="mt-3 px-4 py-2 bg-violet-300/70 text-white rounded-lg shadow hover:bg-violet-700 hover:scale-105 transition-all duration-200 cursor-pointer flex items-center gap-2"
             >
               <FaSearch /> Get all pages
             </button>
@@ -164,7 +228,7 @@ export default function FirecrawlPage() {
           {/* Button to Generate Scenes */}
           <button
             onClick={handleGenerateScenes}
-            className="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg"
+            className="mt-4 bg-green-600 hover:bg-green-700 hover:scale-105 transition-all duration-200 cursor-pointer text-white px-4 py-2 rounded-lg shadow-md"
           >
             Generate Scenes
           </button>
@@ -199,8 +263,8 @@ export default function FirecrawlPage() {
 
         <div className="flex justify-end mt-6">
           <button
-            onClick={() => router.push('/generated-video')}
-            className="px-6 py-3 bg-violet-300/70 text-white rounded-xl shadow hover:bg-violet-700 flex items-center gap-2"
+            onClick={() => router.push('/v2/generated-video')}
+            className="px-6 py-3 bg-violet-300/70 text-white rounded-xl shadow hover:bg-violet-700 hover:scale-105 transition-all duration-200 cursor-pointer flex items-center gap-2"
           >
             <FaVideo /> Generate Video
           </button>

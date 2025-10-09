@@ -1,5 +1,3 @@
-"use client";
-
 import apiClient from "../types/axios";
 
 export default async function GetImages() {

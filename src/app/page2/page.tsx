@@ -79,18 +79,19 @@ const Home: NextPage = () => {
 
         {/* Video Player Card */}
         <div className="bg-violet-950/70 backdrop-blur-md rounded-2xl shadow-8xl overflow-hidden border border-violet-900">
-          <Player
-            component={MyVideo}
-            inputProps={defaultMyCompProps}
-            durationInFrames={DURATION_IN_FRAMES}
-            fps={VIDEO_FPS}
-            compositionHeight={VIDEO_HEIGHT}
-            compositionWidth={VIDEO_WIDTH}
-            className="w-full"
-            controls
-            autoPlay
-            loop
-          />
+          <div className="w-full">
+            <Player
+              component={MyVideo}
+              inputProps={defaultMyCompProps}
+              durationInFrames={DURATION_IN_FRAMES}
+              fps={VIDEO_FPS}
+              compositionHeight={VIDEO_HEIGHT}
+              compositionWidth={VIDEO_WIDTH}
+              controls
+              autoPlay
+              loop
+            />
+          </div>
         </div>
       </div>
 
