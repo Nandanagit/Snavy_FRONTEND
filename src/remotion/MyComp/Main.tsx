@@ -15,6 +15,7 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
   const [currentImage, setCurrentImage] = useState<string>('');
   const [videoFiles, setVideoFiles] = useState<string[]>([]);
   const [currentVideo, setCurrentVideo] = useState<string>('');
+  const [playStarted, setPlayStarted] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchSubtitles = async () => {
@@ -29,18 +30,12 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
   }, []);
 
   useEffect(() => {
-    const fetchVideoFiles = async () => {
-      try {
-        const response = await fetch("http://localhost:6001/video-files");
-        if (response.ok) {
-          const videos = await response.json();
-          setVideoFiles(videos);
-        }
-      } catch (err) {
-        console.error("Failed to fetch video files:", err);
-      }
-    };
-    fetchVideoFiles();
+    // Use static video URLs as requested
+    setVideoFiles([
+      "http://localhost:6001/video/video_string_1756882243498_0_0.mp4",
+      "http://localhost:6001/video/video_string_1756882336055_2_0.mp4",
+      "http://localhost:6001/video/video_string_1756882372688_3_0.mp4"
+    ]);
   }, []);
 
   useEffect(() => {
@@ -60,24 +55,24 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
     setCurrentSubtitle(activeSub || null);
   }, [frame, subtitles]);
 
-  useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const imageUrls = await GetImages();
-        // Assign time ranges to each image (e.g., each image gets 5 seconds)
-        const imageDuration = 5000; // 5 seconds per image in milliseconds
-        const imagesWithTime = imageUrls.map((url: string, index: number) => ({
-          url,
-          start: index * imageDuration,
-          end: (index + 1) * imageDuration
-        }));
-        setImages(imagesWithTime);
-      } catch (err) {
-        console.error("Failed to fetch images:", err);
-      }
-    };
-    fetchImages();
-  }, []);
+  // useEffect(() => {
+  //   const fetchImages = async () => {
+  //     try {
+  //       const imageUrls = await GetImages();
+  //       // Assign time ranges to each image (e.g., each image gets 5 seconds)
+  //       const imageDuration = 5000; // 5 seconds per image in milliseconds
+  //       const imagesWithTime = imageUrls.map((url: string, index: number) => ({
+  //         url,
+  //         start: index * imageDuration,
+  //         end: (index + 1) * imageDuration
+  //       }));
+  //       setImages(imagesWithTime);
+  //     } catch (err) {
+  //       console.error("Failed to fetch images:", err);
+  //     }
+  //   };
+  //   fetchImages();
+  // }, []);
 
   useEffect(() => {
     if (images.length === 0) return;
@@ -97,6 +92,7 @@ export const MyVideo: React.FC<{ title: string }> = ({ title }) => {
       {currentVideo ? (
         <Video
           src={currentVideo}
+          muted
           style={{
             width: '100%',
             height: '100%',

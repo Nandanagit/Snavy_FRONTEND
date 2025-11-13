@@ -11,6 +11,7 @@ export default function FirecrawlPage2() {
   const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [scenes, setScenes] = useState<{ title: string; content: string }[]>([]);
+  const [domainurl, setDomainUrl]= useState("");
 
 
   // Fetch domain from API
@@ -42,6 +43,7 @@ export default function FirecrawlPage2() {
         },
         body: JSON.stringify({ url: domain }),
         });
+        setDomainUrl(domain);
 
         if (!res.ok) {
         throw new Error(await res.text());
@@ -255,15 +257,25 @@ export default function FirecrawlPage2() {
               key={i}
               className="bg-violet-300/70 text-white p-6 rounded-xl shadow-md text-center"
             >
-              <h3 className="font-semibold text-violet-100">{scene.title}</h3>
-              <p className="text-violet-100">{scene.content}</p>
+              <input
+                type="text"
+                value={scene.title}
+                onChange={(e) => setScenes((prev) => prev.map((s,j) => j === i ? {...s, title: e.target.value} : s))}
+                className="w-full p-3 rounded-lg border border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400 placeholder-white"
+              />
+              <textarea
+                value={scene.content}
+                onChange={(e) => setScenes((prev) => prev.map((s,j) => j === i ? {...s, content: e.target.value} : s))}
+                className="w-full p-3 rounded-lg border border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400 placeholder-white"
+                rows={4}
+              />
             </div>
           ))}
         </div>
 
         <div className="flex justify-end mt-6">
           <button
-            onClick={() => router.push('/v2/generated-video')}
+            onClick={() => router.push(`/v2/generated-video?url=${encodeURIComponent(domainurl)}`)}
             className="px-6 py-3 bg-violet-300/70 text-white rounded-xl shadow hover:bg-violet-700 hover:scale-105 transition-all duration-200 cursor-pointer flex items-center gap-2"
           >
             <FaVideo /> Generate Video
